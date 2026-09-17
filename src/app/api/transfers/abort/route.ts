@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AbortMultipartUploadCommand } from "@aws-sdk/client-s3";
-import { s3Client, s3Bucket, isS3Configured } from "@/lib/s3/client";
+import { s3Client, getS3Bucket, isS3Configured } from "@/lib/s3/client";
 import { updateTransferStatus } from "@/lib/transfer/storage";
 
 export async function POST(req: NextRequest) {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     if (isS3Configured() && s3Key && uploadId) {
       await s3Client.send(
         new AbortMultipartUploadCommand({
-          Bucket: s3Bucket,
+          Bucket: getS3Bucket(),
           Key: s3Key,
           UploadId: uploadId,
         })

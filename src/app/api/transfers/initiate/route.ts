@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CreateMultipartUploadCommand } from "@aws-sdk/client-s3";
-import { s3Client, s3Bucket, isS3Configured } from "@/lib/s3/client";
+import { s3Client, getS3Bucket, isS3Configured } from "@/lib/s3/client";
 import { saveTransferMetadata } from "@/lib/transfer/storage";
 import { InitiateTransferRequest, InitiateTransferResponse, TransferMetadata } from "@/lib/transfer/types";
 import { randomUUID } from "crypto";
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     if (isS3Configured()) {
       const command = new CreateMultipartUploadCommand({
-        Bucket: s3Bucket,
+        Bucket: getS3Bucket(),
         Key: s3Key,
         ContentType: "application/octet-stream",
         ServerSideEncryption: "AES256", // Encrypted at rest on AWS S3

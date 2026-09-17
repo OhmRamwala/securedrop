@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client, s3Bucket, isS3Configured } from "@/lib/s3/client";
+import { s3Client, getS3Bucket, isS3Configured } from "@/lib/s3/client";
 import { getTransferMetadata } from "@/lib/transfer/storage";
 import { TransferLookupResponse } from "@/lib/transfer/types";
 
@@ -43,7 +43,7 @@ export async function GET(
 
     if (isS3Configured()) {
       const command = new GetObjectCommand({
-        Bucket: s3Bucket,
+        Bucket: getS3Bucket(),
         Key: metadata.s3Key,
         ResponseContentDisposition: `attachment; filename="ciphertext.bin"`,
       });

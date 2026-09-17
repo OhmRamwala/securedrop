@@ -1,4 +1,4 @@
-import { s3Client, s3Bucket, isS3Configured } from "../s3/client";
+import { s3Client, getS3Bucket, isS3Configured } from "../s3/client";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { TransferMetadata } from "./types";
 
@@ -16,7 +16,7 @@ export async function saveTransferMetadata(metadata: TransferMetadata): Promise<
       const metaKey = `transfers/${metadata.codeHash}/meta.json`;
       await s3Client.send(
         new PutObjectCommand({
-          Bucket: s3Bucket,
+          Bucket: getS3Bucket(),
           Key: metaKey,
           Body: JSON.stringify(metadata),
           ContentType: "application/json",
@@ -37,7 +37,7 @@ export async function getTransferMetadata(codeHash: string): Promise<TransferMet
       const metaKey = `transfers/${codeHash}/meta.json`;
       const response = await s3Client.send(
         new GetObjectCommand({
-          Bucket: s3Bucket,
+          Bucket: getS3Bucket(),
           Key: metaKey,
         })
       );

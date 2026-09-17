@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CompleteMultipartUploadCommand } from "@aws-sdk/client-s3";
-import { s3Client, s3Bucket, isS3Configured } from "@/lib/s3/client";
+import { s3Client, getS3Bucket, isS3Configured } from "@/lib/s3/client";
 import { getTransferMetadata, saveTransferMetadata } from "@/lib/transfer/storage";
 import { CompleteTransferRequest, CompleteTransferResponse } from "@/lib/transfer/types";
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     if (isS3Configured()) {
       const command = new CompleteMultipartUploadCommand({
-        Bucket: s3Bucket,
+        Bucket: getS3Bucket(),
         Key: body.s3Key,
         UploadId: body.uploadId,
         MultipartUpload: {
