@@ -35,10 +35,10 @@ export function SenderCard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (selectedFile: File) => {
-    // 500 MB check
-    const MAX_SIZE = 500 * 1024 * 1024;
+    // 2 GB check
+    const MAX_SIZE = 2 * 1024 * 1024 * 1024;
     if (selectedFile.size > MAX_SIZE) {
-      setErrorMessage("File exceeds the maximum limit of 500 MB.");
+      setErrorMessage("File exceeds the maximum limit of 2 GB.");
       setFile(null);
       return;
     }
@@ -178,7 +178,7 @@ export function SenderCard() {
                   </span>
                 </p>
                 <p className="text-xs text-slate-500 mt-2">
-                  Supports any file type up to 500 MB (Direct S3 Presigned Upload)
+                  Supports any file type up to 2 GB (Direct S3 Presigned Upload)
                 </p>
               </div>
             )}

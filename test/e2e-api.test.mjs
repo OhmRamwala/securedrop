@@ -148,19 +148,21 @@ async function testE2E() {
   assert.strictEqual(notFoundRes.status, 404);
   console.log("  ✓ Non-existent transfer correctly returns 404");
 
-  // 9. Test 500 MB limit enforcement
-  console.log("\n9. Testing >500 MB file rejection");
+  // 9. Test 2 GB limit enforcement
+  console.log("\n9. Testing >2 GB file rejection");
   const oversizedRes = await fetch(`${baseUrl}/api/transfers/initiate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...initPayload,
       codeHash: "oversized-test",
-      fileSize: 501 * 1024 * 1024,
+      fileSize: 2 * 1024 * 1024 * 1024 + 1024,
     }),
   });
   assert.strictEqual(oversizedRes.status, 400);
-  console.log("  ✓ >500 MB file correctly rejected with 400 Bad Request");
+  const overData = await oversizedRes.json();
+  assert.ok(overData.error.includes("2 GB limit"));
+  console.log("  ✓ >2 GB file correctly rejected with 400 Bad Request");
 
   console.log("\n🎉 ALL END-TO-END FLOW TESTS COMPLETED SUCCESSFULLY! 100% WORKING.");
 }

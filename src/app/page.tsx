@@ -28,7 +28,7 @@ export default function Home() {
           </p>
 
           <p className="text-xs text-slate-500 mt-2">
-            Files are encrypted locally in your browser before uploading directly to AWS S3. Up to 500 MB supported.
+            Files are encrypted locally in your browser before uploading directly to AWS S3. Up to 2 GB supported.
           </p>
         </div>
 

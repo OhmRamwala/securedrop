@@ -16,11 +16,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Maximum 500 MB file size validation
-    const MAX_FILE_SIZE = 500 * 1024 * 1024;
+    // Maximum 2 GB file size validation
+    const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024;
     if (body.fileSize > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: "File exceeds 500 MB limit" },
+        { error: "File exceeds 2 GB limit" },
         { status: 400 }
       );
     }

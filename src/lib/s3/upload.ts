@@ -1,6 +1,6 @@
 /**
  * SecureDrop Browser-to-S3 Multipart Upload Engine
- * Streams and encrypts files up to 500 MB in 8 MB chunks directly to S3.
+ * Streams and encrypts files up to 2 GB in 8 MB chunks directly to S3.
  */
 
 import {
