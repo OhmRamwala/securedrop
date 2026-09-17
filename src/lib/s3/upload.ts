@@ -42,54 +42,73 @@ export interface UploadResult {
 }
 
 /**
- * Uploads a single encrypted chunk to S3 using XMLHttpRequest for accurate progress tracking.
+ * Uploads a single encrypted chunk to S3 using XMLHttpRequest for accurate progress tracking,
+ * with fetch fallback for Node.js test environments.
  */
 function uploadChunkWithProgress(
   url: string,
   chunkData: ArrayBuffer,
   onChunkProgress: (loaded: number) => void
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url);
+  if (typeof XMLHttpRequest !== "undefined") {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", url);
 
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        onChunkProgress(event.loaded);
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          onChunkProgress(event.loaded);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          let etag = xhr.getResponseHeader("ETag") || "";
+          etag = etag.replace(/^"|"$/g, "");
+          resolve(etag || `etag-${Date.now()}`);
+        } else {
+          reject(new Error(`S3 upload error: HTTP ${xhr.status} - ${xhr.statusText}`));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Network error during S3 chunk upload"));
+      xhr.ontimeout = () => reject(new Error("Timeout during S3 chunk upload"));
+
+      xhr.send(chunkData);
+    });
+  } else {
+    // Node.js runtime fallback for automated testing
+    return fetch(url, {
+      method: "PUT",
+      body: chunkData,
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error(`S3 upload error: HTTP ${res.status} - ${res.statusText}`);
       }
-    };
-
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        // S3 returns ETag in the response header
-        let etag = xhr.getResponseHeader("ETag") || "";
-        // Clean quotes if needed
-        etag = etag.replace(/^"|"$/g, "");
-        resolve(etag || `etag-${Date.now()}`);
-      } else {
-        reject(new Error(`S3 upload error: HTTP ${xhr.status} - ${xhr.statusText}`));
-      }
-    };
-
-    xhr.onerror = () => reject(new Error("Network error during S3 chunk upload"));
-    xhr.ontimeout = () => reject(new Error("Timeout during S3 chunk upload"));
-
-    xhr.send(chunkData);
-  });
+      onChunkProgress(chunkData.byteLength);
+      let etag = res.headers.get("ETag") || "";
+      etag = etag.replace(/^"|"$/g, "");
+      return etag || `etag-${Date.now()}`;
+    });
+  }
 }
 
 /**
  * Main upload orchestrator for Sender browser.
+ * Pipelined worker pool uploads chunks in parallel (default concurrency: 3)
+ * while ensuring memory usage is bounded to at most CONCURRENCY * CHUNK_SIZE.
  */
 export async function uploadFileSecurely(
   file: File,
   onProgress: ProgressCallback,
-  onStatus: StatusCallback
+  onStatus: StatusCallback,
+  concurrency: number = 3
 ): Promise<UploadResult> {
   onStatus("Preparing file...");
 
   const totalBytes = file.size;
   const totalChunks = Math.ceil(totalBytes / CHUNK_SIZE) || 1;
+  const MAX_PART_RETRIES = 3;
 
   // 1. Generate cryptographic keys
   onStatus("Generating secure encryption key...");
@@ -104,11 +123,7 @@ export async function uploadFileSecurely(
   const codeHash = await hashTransferCode(code);
   const wrappedKeyBundle = await wrapFileKey(fileKey, code);
 
-  // 3. Compute integrity hash across chunks
-  onStatus("Calculating integrity metadata...");
-  const chunkHashes: string[] = [];
-
-  // 4. Initiate transfer with serverless backend
+  // 3. Initiate transfer with serverless backend
   onStatus("Initializing transfer...");
   const initiatePayload: InitiateTransferRequest = {
     codeHash,
@@ -137,68 +152,136 @@ export async function uploadFileSecurely(
 
   const { transferId, uploadId, s3Key } = (await initRes.json()) as InitiateTransferResponse;
 
-  // 5. Encrypt & Upload chunks directly to S3
-  const uploadedParts: TransferPart[] = [];
-  let totalUploadedBytes = 0;
+  // 4. Controlled Parallel Multipart Upload
+  const uploadedParts: TransferPart[] = new Array(totalChunks);
+  const chunkHashes: string[] = new Array(totalChunks);
+  const chunkLoadedBytes: number[] = new Array(totalChunks).fill(0);
+  const totalExpectedCipherBytes = totalBytes + totalChunks * 16; // 16-byte AES-GCM tag per chunk
 
-  try {
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+  let completedChunks = 0;
+  let nextChunkIndex = 0;
+  let isAborted = false;
+  let abortError: any = null;
+
+  const reportProgress = () => {
+    const currentTotal = chunkLoadedBytes.reduce((sum, b) => sum + b, 0);
+    const percent = Math.min(
+      Math.round((currentTotal / totalExpectedCipherBytes) * 100),
+      99
+    );
+    onProgress({
+      percent,
+      bytesUploaded: currentTotal,
+      totalBytes: totalExpectedCipherBytes,
+      currentChunk: Math.min(completedChunks, totalChunks),
+      totalChunks,
+    });
+  };
+
+  async function worker() {
+    while (true) {
+      if (isAborted) break;
+
+      const chunkIndex = nextChunkIndex++;
+      if (chunkIndex >= totalChunks) break;
+
+      const partNumber = chunkIndex + 1;
       const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, totalBytes);
+
+      // On-demand streaming slice: only active workers hold chunks in memory
       const fileBlob = file.slice(start, end);
       const rawChunk = await fileBlob.arrayBuffer();
 
-      // Track chunk hash
+      // Compute plaintext chunk SHA-256
       const chunkHash = await computeSha256(rawChunk);
-      chunkHashes.push(chunkHash);
+      chunkHashes[chunkIndex] = chunkHash;
 
-      // Local browser encryption
-      onStatus(`Encrypting locally (chunk ${chunkIndex + 1}/${totalChunks})...`);
+      // Local browser encryption (AES-256-GCM)
       const encryptedChunk = await encryptChunk(fileKey, rawChunk, chunkIndex, baseIv);
 
-      onStatus(`Uploading encrypted data (chunk ${chunkIndex + 1}/${totalChunks})...`);
+      // Upload with per-part retry
+      let partUploaded = false;
+      let partError: any = null;
 
-      // Obtain presigned PUT URL for this part
-      const presignedReq: PresignedPartRequest = {
-        transferId,
-        partNumber: chunkIndex + 1,
-        uploadId,
-        s3Key,
-      };
+      for (let attempt = 1; attempt <= MAX_PART_RETRIES; attempt++) {
+        if (isAborted) break;
 
-      const presignedRes = await fetch("/api/transfers/presigned-part", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(presignedReq),
-      });
+        try {
+          // Obtain presigned PUT URL for this part
+          const presignedReq: PresignedPartRequest = {
+            transferId,
+            partNumber,
+            uploadId,
+            s3Key,
+          };
 
-      if (!presignedRes.ok) {
-        const errData = await presignedRes.json().catch(() => ({}));
-        throw new Error(errData.error || `Failed to obtain presigned URL for part ${chunkIndex + 1}`);
+          const presignedRes = await fetch("/api/transfers/presigned-part", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(presignedReq),
+          });
+
+          if (!presignedRes.ok) {
+            const errData = await presignedRes.json().catch(() => ({}));
+            throw new Error(errData.error || `Failed to obtain presigned URL for part ${partNumber}`);
+          }
+
+          const { url } = (await presignedRes.json()) as PresignedPartResponse;
+
+          onStatus(`Uploading encrypted parts (${completedChunks + 1}/${totalChunks})...`);
+
+          // Direct browser-to-S3 upload
+          const etag = await uploadChunkWithProgress(url, encryptedChunk, (loaded) => {
+            chunkLoadedBytes[chunkIndex] = loaded;
+            reportProgress();
+          });
+
+          chunkLoadedBytes[chunkIndex] = encryptedChunk.byteLength;
+          uploadedParts[chunkIndex] = {
+            PartNumber: partNumber,
+            ETag: etag,
+          };
+
+          completedChunks++;
+          reportProgress();
+          partUploaded = true;
+          break;
+        } catch (err: any) {
+          partError = err;
+          if (attempt < MAX_PART_RETRIES && !isAborted) {
+            // Exponential backoff (300ms, 600ms)
+            await new Promise((resolve) => setTimeout(resolve, attempt * 300));
+          }
+        }
       }
 
-      const { url } = (await presignedRes.json()) as PresignedPartResponse;
-
-      // Direct upload to S3
-      let chunkUploaded = 0;
-      const etag = await uploadChunkWithProgress(url, encryptedChunk, (loaded) => {
-        chunkUploaded = loaded;
-        const currentTotal = totalUploadedBytes + chunkUploaded;
-        onProgress({
-          percent: Math.min(Math.round((currentTotal / (totalBytes + totalChunks * 16)) * 100), 99),
-          bytesUploaded: currentTotal,
-          totalBytes: totalBytes + totalChunks * 16,
-          currentChunk: chunkIndex + 1,
-          totalChunks,
-        });
-      });
-
-      totalUploadedBytes += encryptedChunk.byteLength;
-      uploadedParts.push({
-        PartNumber: chunkIndex + 1,
-        ETag: etag,
-      });
+      if (!partUploaded && !isAborted) {
+        isAborted = true;
+        abortError = partError || new Error(`Upload failed for part ${partNumber}`);
+        break;
+      }
     }
+  }
+
+  try {
+    const activeConcurrency = Math.max(1, Math.min(concurrency, totalChunks));
+    const workers = Array.from({ length: activeConcurrency }, () => worker());
+    await Promise.all(workers);
+
+    if (isAborted || abortError) {
+      throw abortError || new Error("Upload aborted due to part failure");
+    }
+
+    // Verify all parts were uploaded
+    for (let i = 0; i < totalChunks; i++) {
+      if (!uploadedParts[i]) {
+        throw new Error(`Missing uploaded part ${i + 1}`);
+      }
+    }
+
+    // Ascending order check (strict S3 requirement)
+    const sortedParts = [...uploadedParts].sort((a, b) => a.PartNumber - b.PartNumber);
 
     onStatus("Encryption complete.");
 
@@ -207,13 +290,13 @@ export async function uploadFileSecurely(
     const combinedHashes = encoder.encode(chunkHashes.join(":"));
     const finalFileSha256 = await computeSha256(combinedHashes.buffer as ArrayBuffer);
 
-    // 6. Complete multipart upload
+    // 5. Complete multipart upload
     onStatus("Finalizing upload...");
     const completePayload: CompleteTransferRequest = {
       transferId,
       uploadId,
       s3Key,
-      parts: uploadedParts,
+      parts: sortedParts,
     };
 
     const completeRes = await fetch("/api/transfers/complete", {
@@ -229,8 +312,8 @@ export async function uploadFileSecurely(
 
     onProgress({
       percent: 100,
-      bytesUploaded: totalUploadedBytes,
-      totalBytes: totalUploadedBytes,
+      bytesUploaded: totalExpectedCipherBytes,
+      totalBytes: totalExpectedCipherBytes,
       currentChunk: totalChunks,
       totalChunks,
     });
