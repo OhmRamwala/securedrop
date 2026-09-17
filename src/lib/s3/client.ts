@@ -4,23 +4,49 @@ function getEnv(key: string, altKey?: string): string {
   return process.env[key] || (altKey ? process.env[altKey] : "") || "";
 }
 
+export function getS3Region(): string {
+  return getEnv("S3_REGION", "AWS_REGION") || "eu-north-1";
+}
+
+export function getS3Bucket(): string {
+  return getEnv("S3_BUCKET", "AWS_S3_BUCKET") || "securedrop-college-prototype";
+}
+
 export function isS3Configured(): boolean {
   const accessKeyId = getEnv("S3_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID");
   const secretAccessKey = getEnv("S3_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY");
-  const bucket = getEnv("S3_BUCKET", "AWS_S3_BUCKET");
-  return Boolean(accessKeyId && secretAccessKey && bucket);
+  return Boolean(accessKeyId && secretAccessKey);
 }
 
-export const s3Bucket = process.env.S3_BUCKET || process.env.AWS_S3_BUCKET || "securedrop-files";
+export function getS3Client(): S3Client {
+  const accessKeyId = getEnv("S3_ACCESS_KEY_ID", "AWS_ACCESS_KEY_ID");
+  const secretAccessKey = getEnv("S3_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY");
+  const region = getS3Region();
 
-export const s3Client = new S3Client({
-  region: process.env.S3_REGION || process.env.AWS_REGION || "us-east-1",
-  credentials:
-    (process.env.S3_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID) &&
-    (process.env.S3_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY)
-      ? {
-          accessKeyId: (process.env.S3_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID)!,
-          secretAccessKey: (process.env.S3_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY)!,
-        }
-      : undefined,
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error(
+      "AWS S3 credentials not found. Ensure S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY are set."
+    );
+  }
+
+  return new S3Client({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+}
+
+export const s3Bucket =
+  process.env.S3_BUCKET ||
+  process.env.AWS_S3_BUCKET ||
+  "securedrop-college-prototype";
+
+export const s3Client = new Proxy({} as S3Client, {
+  get(_target, prop) {
+    const client = getS3Client();
+    const val = (client as any)[prop];
+    return typeof val === "function" ? val.bind(client) : val;
+  },
 });

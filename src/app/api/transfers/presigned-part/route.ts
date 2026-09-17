@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { UploadPartCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client, s3Bucket, isS3Configured } from "@/lib/s3/client";
+import { s3Client, getS3Bucket, isS3Configured } from "@/lib/s3/client";
 import { PresignedPartRequest, PresignedPartResponse } from "@/lib/transfer/types";
 
 export async function POST(req: NextRequest) {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
     if (isS3Configured()) {
       const command = new UploadPartCommand({
-        Bucket: s3Bucket,
+        Bucket: getS3Bucket(),
         Key: body.s3Key,
         UploadId: body.uploadId,
         PartNumber: body.partNumber,
@@ -50,7 +50,10 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (err: any) {
-    console.error("Error generating presigned part URL:", err);
+    console.error("Error generating presigned part URL:", {
+      name: err.name,
+      message: err.message,
+    });
     return NextResponse.json(
       { error: err.message || "Failed to generate presigned URL" },
       { status: 500 }

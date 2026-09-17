@@ -173,7 +173,8 @@ export async function uploadFileSecurely(
       });
 
       if (!presignedRes.ok) {
-        throw new Error(`Failed to obtain presigned URL for part ${chunkIndex + 1}`);
+        const errData = await presignedRes.json().catch(() => ({}));
+        throw new Error(errData.error || `Failed to obtain presigned URL for part ${chunkIndex + 1}`);
       }
 
       const { url } = (await presignedRes.json()) as PresignedPartResponse;
