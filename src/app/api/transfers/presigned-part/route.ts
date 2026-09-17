@@ -31,6 +31,17 @@ export async function POST(req: NextRequest) {
       };
       return NextResponse.json(response);
     } else {
+      // In production, prevent silent fallback to mock-part which triggers HTTP 413 on Lambda/Amplify
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          {
+            error:
+              "AWS S3 is not configured in production. Set S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_BUCKET in Amplify environment variables.",
+          },
+          { status: 500 }
+        );
+      }
+
       // Local fallback mock upload endpoint for offline dev/testing
       const fallbackUrl = `/api/transfers/mock-part?key=${encodeURIComponent(body.s3Key)}&part=${body.partNumber}&uploadId=${encodeURIComponent(body.uploadId)}`;
       return NextResponse.json({
