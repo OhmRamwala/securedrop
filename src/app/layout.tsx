@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#090d14] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200">
+      <body className="min-h-screen bg-[#0a0e17] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200">
         <Navbar />
         {children}
       </body>

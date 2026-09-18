@@ -3,28 +3,39 @@
 @tailwind utilities;
 
 :root {
-  --background: #090d14;
-  --foreground: #f1f5f9;
+  --background: #0a0e17;
+  --foreground: #f3f5f9;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+  background-color: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Oxygen,
     Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Professional card surface */
-.pro-card {
-  background-color: #0f141f;
-  border: 1px solid #1e2638;
+/* Subtle background texture for real-world depth */
+.subtle-pattern {
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.03) 0px, transparent 50%);
+  background-size: 28px 28px, 100% 100%, 100% 100%;
 }
 
-.pro-card:hover {
-  border-color: #2b354d;
+/* Subtle border and depth tokens */
+.product-card {
+  background-color: #111624;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.product-card-elevated {
+  background-color: #151b2c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Restrained scrollbar */
@@ -36,9 +47,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #242c3d;
+  background: #252e42;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #333d54;
+  background: #36425d;
 }
