@@ -4,22 +4,16 @@ import React, { useState } from "react";
 import {
   Lock,
   Unlock,
-  ShieldCheck,
-  ShieldAlert,
-  ArrowRight,
-  ArrowLeft,
   RotateCcw,
   Eye,
   EyeOff,
   Send,
   Radio,
-  User,
   Skull,
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
 
-// Modular exponentiation helper: (base^exp) % mod
 function modExp(base: number, exp: number, mod: number): number {
   let res = 1;
   base = base % mod;
@@ -34,37 +28,27 @@ function modExp(base: number, exp: number, mod: number): number {
 export function DiffieHellmanDemo() {
   const [mode, setMode] = useState<"normal" | "mitm">("normal");
 
-  // Normal mode progress: 0 = Idle, 1 = Exchanging Public Keys, 2 = Secret Derived
   const [normalStep, setNormalStep] = useState<number>(0);
-
-  // MITM mode progress: 0 = Idle, 1 = Attack Armed, 2 = Keys Intercepted & Split Secrets Derived, 3 = Message Tampered
   const [mitmStep, setMitmStep] = useState<number>(0);
-
-  // Show/hide private exponents
   const [showPrivate, setShowPrivate] = useState<boolean>(false);
 
-  // Message tampering state for MITM
-  const [aliceMessage, setAliceMessage] = useState<string>("HELLO BOB - SECRET PASSCODE 7792");
+  const [aliceMessage] = useState<string>("HELLO BOB - SECRET PASSCODE 7792");
   const [malloryTamperText, setMalloryTamperText] = useState<string>("HELLO MALLORY - TRANSFER $50,000");
 
-  // Mathematical Parameters
-  const p = 23; // Public prime modulus
-  const g = 5;  // Generator
+  const p = 23;
+  const g = 5;
 
-  // Private Keys
-  const a = 6;  // Alice's private key
-  const b = 15; // Bob's private key
-  const m = 7;  // Mallory's private key
+  const a = 6;
+  const b = 15;
+  const m = 7;
 
-  // Public Keys (g^x mod p)
-  const A = modExp(g, a, p); // 5^6 mod 23 = 8
-  const B = modExp(g, b, p); // 5^15 mod 23 = 19
-  const M = modExp(g, m, p); // 5^7 mod 23 = 17
+  const A = modExp(g, a, p); // 8
+  const B = modExp(g, b, p); // 19
+  const M = modExp(g, m, p); // 17
 
-  // Shared Secrets
-  const S_Normal = modExp(B, a, p);     // 19^6 mod 23 = 2 (Alice and Bob)
-  const S_Alice_Mitm = modExp(M, a, p); // 17^6 mod 23 = 13 (Alice with Mallory)
-  const S_Bob_Mitm = modExp(M, b, p);   // 17^15 mod 23 = 9 (Bob with Mallory)
+  const S_Normal = modExp(B, a, p);     // 2
+  const S_Alice_Mitm = modExp(M, a, p); // 13
+  const S_Bob_Mitm = modExp(M, b, p);   // 9
 
   const resetAll = () => {
     setNormalStep(0);
@@ -79,24 +63,24 @@ export function DiffieHellmanDemo() {
 
   return (
     <div className="space-y-6">
-      {/* Simulation Title & Mode Selector */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+      {/* Simulation Header & Mode Selector */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-slate-950 border border-slate-800">
         <div>
-          <div className="text-xs font-mono uppercase text-cyan-400 font-semibold tracking-wider">
-            Cybersecurity Simulation Lab
-          </div>
-          <h3 className="text-base font-bold text-slate-100">
-            Interactive Diffie-Hellman & MITM Arena
+          <h3 className="text-sm font-semibold text-slate-100">
+            Diffie-Hellman Key Exchange &amp; MITM Simulation
           </h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Compare legitimate key exchange against an unauthenticated man-in-the-middle attack.
+          </p>
         </div>
 
         {/* Mode Selector */}
-        <div className="flex items-center gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-900 rounded-lg border border-slate-800">
           <button
             onClick={() => switchMode("normal")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold font-mono transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${
               mode === "normal"
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm"
+                ? "bg-slate-800 text-white shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -105,9 +89,9 @@ export function DiffieHellmanDemo() {
           </button>
           <button
             onClick={() => switchMode("mitm")}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold font-mono transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${
               mode === "mitm"
-                ? "bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-sm"
+                ? "bg-rose-950/40 text-rose-300 border border-rose-500/30"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -117,43 +101,42 @@ export function DiffieHellmanDemo() {
         </div>
       </div>
 
-      {/* Public Domain Parameters Bar */}
-      <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-mono text-slate-300 flex flex-wrap items-center justify-between gap-3">
+      {/* Public Parameters Bar */}
+      <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 text-xs font-mono text-slate-300 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
-          <span>Public Prime: <strong className="text-cyan-400">p = {p}</strong></span>
-          <span>Generator: <strong className="text-cyan-400">g = {g}</strong></span>
+          <span>Prime: <strong className="text-slate-100">p = {p}</strong></span>
+          <span>Generator: <strong className="text-slate-100">g = {g}</strong></span>
         </div>
         <button
           onClick={() => setShowPrivate(!showPrivate)}
-          className="text-[11px] text-slate-400 hover:text-cyan-300 transition flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
+          className="text-[11px] text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded border border-slate-800"
         >
-          {showPrivate ? <EyeOff className="w-3.5 h-3.5 text-amber-400" /> : <Eye className="w-3.5 h-3.5" />}
+          {showPrivate ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
           <span>{showPrivate ? "Hide Private Keys" : "Reveal Private Keys"}</span>
         </button>
       </div>
 
       {/* ================= NORMAL MODE SIMULATION ================= */}
       {mode === "normal" && (
-        <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-950 border border-emerald-500/30 shadow-2xl space-y-6">
+        <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-5">
           {/* Controls Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-slate-400">Simulation Controls:</span>
               {normalStep === 0 && (
                 <button
                   onClick={() => setNormalStep(1)}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-md shadow-emerald-950/50 transition active:scale-95"
+                  className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs font-mono flex items-center gap-1.5 transition-colors"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3 h-3" />
                   <span>Start Key Exchange</span>
                 </button>
               )}
               {normalStep === 1 && (
                 <button
                   onClick={() => setNormalStep(2)}
-                  className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-md shadow-emerald-950/50 transition active:scale-95 animate-pulse"
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs font-mono flex items-center gap-1.5 transition-colors"
                 >
-                  <Lock className="w-3.5 h-3.5" />
+                  <Lock className="w-3 h-3" />
                   <span>Reveal Shared Secret</span>
                 </button>
               )}
@@ -161,149 +144,108 @@ export function DiffieHellmanDemo() {
 
             <button
               onClick={resetAll}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition"
+              className="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-slate-400 text-xs font-mono flex items-center gap-1 transition-colors"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Reset</span>
             </button>
           </div>
 
-          {/* Interactive Visual Network Grid */}
+          {/* Nodes */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             {/* Alice Card */}
-            <div className="p-4 rounded-xl bg-slate-950 border border-cyan-500/40 space-y-3 font-mono text-xs">
+            <div className="p-4 rounded-lg bg-slate-900/60 border border-slate-800 space-y-2.5 font-mono text-xs">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
-                    A
-                  </div>
-                  <span className="font-bold text-cyan-300">Alice (Sender)</span>
-                </div>
-                <span className="text-[10px] text-cyan-400/80 bg-cyan-950/50 px-2 py-0.5 rounded">
-                  Client
-                </span>
+                <span className="font-semibold text-slate-200">Alice (Sender)</span>
               </div>
 
               <div>
-                <div className="text-[11px] text-slate-400">Private Exponent:</div>
-                <div className="text-cyan-400 font-bold">
-                  {showPrivate ? `a = ${a}` : "[hidden private key]"}
+                <div className="text-[11px] text-slate-400">Private Value:</div>
+                <div className="text-slate-300 font-semibold">
+                  {showPrivate ? `a = ${a}` : "[hidden]"}
                 </div>
               </div>
 
               <div>
-                <div className="text-[11px] text-slate-400">Public Value Generated:</div>
+                <div className="text-[11px] text-slate-400">Public Value:</div>
                 <div className="text-slate-200">
-                  {normalStep >= 1 ? (
-                    <span className="text-cyan-300 font-bold">
-                      A = 5^{a} mod 23 = <strong className="text-white text-sm bg-cyan-950 px-1.5 py-0.5 rounded border border-cyan-500/30">{A}</strong>
-                    </span>
-                  ) : (
-                    <span className="text-slate-500 italic">Not transmitted yet</span>
-                  )}
+                  {normalStep >= 1 ? `A = ${A}` : "?"}
                 </div>
               </div>
 
               {normalStep >= 2 && (
-                <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300">
-                  <div className="text-[10px] uppercase font-bold text-emerald-400">Derived Secret:</div>
-                  <div className="text-sm font-bold mt-0.5">
-                    S = B^a mod 23 = 19^6 mod 23 = <span className="text-white bg-emerald-900/60 px-2 py-0.5 rounded">{S_Normal}</span>
-                  </div>
+                <div className="p-2 rounded bg-emerald-950/20 border border-emerald-500/30 text-emerald-300">
+                  <div className="text-[10px] uppercase text-emerald-400">Shared Secret:</div>
+                  <div className="text-xs font-bold mt-0.5">{S_Normal}</div>
                 </div>
               )}
             </div>
 
-            {/* Network Channel in the Middle */}
-            <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-center font-mono space-y-3">
-              <div className="text-[10px] uppercase text-slate-400 font-bold tracking-wider flex items-center justify-center gap-1.5">
-                <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                <span>Insecure Public Wire</span>
+            {/* Network Channel */}
+            <div className="p-4 rounded-lg bg-slate-900/40 border border-slate-800 text-center font-mono space-y-2">
+              <div className="text-[10px] uppercase text-slate-500 font-semibold flex items-center justify-center gap-1.5">
+                <Radio className="w-3 h-3 text-slate-400" />
+                <span>Public Network</span>
               </div>
 
               {normalStep === 0 && (
-                <div className="py-4 text-xs text-slate-500 italic">
-                  Channel idle. Click &quot;Start Key Exchange&quot; above.
+                <div className="py-2 text-xs text-slate-500 italic">
+                  Click &quot;Start Key Exchange&quot;
                 </div>
               )}
 
               {normalStep >= 1 && (
-                <div className="space-y-2 text-xs">
-                  {/* Alice to Bob */}
-                  <div className="p-2 rounded bg-cyan-950/50 border border-cyan-500/30 text-cyan-300 flex items-center justify-between">
+                <div className="space-y-1.5 text-xs text-slate-300">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800 flex justify-between">
                     <span>Alice → Bob:</span>
-                    <strong className="text-white bg-cyan-900/60 px-2 py-0.5 rounded">A = {A}</strong>
+                    <strong className="text-slate-100">A = {A}</strong>
                   </div>
-                  {/* Bob to Alice */}
-                  <div className="p-2 rounded bg-emerald-950/50 border border-emerald-500/30 text-emerald-300 flex items-center justify-between">
+                  <div className="p-1.5 rounded bg-slate-950 border border-slate-800 flex justify-between">
                     <span>Bob → Alice:</span>
-                    <strong className="text-white bg-emerald-900/60 px-2 py-0.5 rounded">B = {B}</strong>
-                  </div>
-                  <div className="text-[10px] text-slate-400 pt-1">
-                    Public wire exposes A={A}, B={B}. Discrete logarithm protects secrets!
+                    <strong className="text-slate-100">B = {B}</strong>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Bob Card */}
-            <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/40 space-y-3 font-mono text-xs">
+            <div className="p-4 rounded-lg bg-slate-900/60 border border-slate-800 space-y-2.5 font-mono text-xs">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                    B
-                  </div>
-                  <span className="font-bold text-emerald-300">Bob (Receiver)</span>
-                </div>
-                <span className="text-[10px] text-emerald-400/80 bg-emerald-950/50 px-2 py-0.5 rounded">
-                  Client
-                </span>
+                <span className="font-semibold text-slate-200">Bob (Receiver)</span>
               </div>
 
               <div>
-                <div className="text-[11px] text-slate-400">Private Exponent:</div>
-                <div className="text-emerald-400 font-bold">
-                  {showPrivate ? `b = ${b}` : "[hidden private key]"}
+                <div className="text-[11px] text-slate-400">Private Value:</div>
+                <div className="text-slate-300 font-semibold">
+                  {showPrivate ? `b = ${b}` : "[hidden]"}
                 </div>
               </div>
 
               <div>
-                <div className="text-[11px] text-slate-400">Public Value Generated:</div>
+                <div className="text-[11px] text-slate-400">Public Value:</div>
                 <div className="text-slate-200">
-                  {normalStep >= 1 ? (
-                    <span className="text-emerald-300 font-bold">
-                      B = 5^{b} mod 23 = <strong className="text-white text-sm bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-500/30">{B}</strong>
-                    </span>
-                  ) : (
-                    <span className="text-slate-500 italic">Not transmitted yet</span>
-                  )}
+                  {normalStep >= 1 ? `B = ${B}` : "?"}
                 </div>
               </div>
 
               {normalStep >= 2 && (
-                <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300">
-                  <div className="text-[10px] uppercase font-bold text-emerald-400">Derived Secret:</div>
-                  <div className="text-sm font-bold mt-0.5">
-                    S = A^b mod 23 = 8^15 mod 23 = <span className="text-white bg-emerald-900/60 px-2 py-0.5 rounded">{S_Normal}</span>
-                  </div>
+                <div className="p-2 rounded bg-emerald-950/20 border border-emerald-500/30 text-emerald-300">
+                  <div className="text-[10px] uppercase text-emerald-400">Shared Secret:</div>
+                  <div className="text-xs font-bold mt-0.5">{S_Normal}</div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Normal Mode Outcome Banner */}
+          {/* Outcome Banner */}
           {normalStep >= 2 && (
-            <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 flex items-center justify-between gap-3 text-xs font-mono">
-              <div className="flex items-center gap-2.5 text-emerald-300">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <div>
-                  <div className="font-bold text-sm">
-                    ✓ SECRETS MATCHED (S = {S_Normal})
-                  </div>
-                  <div className="text-slate-300 text-[11px] mt-0.5">
-                    Both parties independently derived the same shared secret ({S_Normal}) without ever sending the secret itself over the network!
-                  </div>
-                </div>
+            <div className="p-3.5 rounded-lg bg-emerald-950/20 border border-emerald-500/30 flex items-center gap-2.5 text-xs font-mono text-emerald-300">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div>
+                <span className="font-semibold">✓ MATCHED: Shared Secret = {S_Normal}</span>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Both parties independently derived the same shared secret without sending the secret itself.
+                </p>
               </div>
             </div>
           )}
@@ -312,222 +254,163 @@ export function DiffieHellmanDemo() {
 
       {/* ================= MITM ATTACK SIMULATION ================= */}
       {mode === "mitm" && (
-        <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-950 border border-rose-500/40 shadow-2xl space-y-6">
+        <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-5">
           {/* Controls Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-slate-400">Attack Controls:</span>
               {mitmStep === 0 && (
                 <button
                   onClick={() => setMitmStep(1)}
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs font-mono flex items-center gap-1.5 shadow-md shadow-rose-950/50 transition active:scale-95"
+                  className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-medium text-xs font-mono flex items-center gap-1.5 transition-colors"
                 >
-                  <Skull className="w-3.5 h-3.5" />
-                  <span>🚨 ENABLE MITM ATTACK</span>
+                  <Skull className="w-3 h-3" />
+                  <span>Enable MITM Attack</span>
                 </button>
               )}
               {mitmStep === 1 && (
                 <button
                   onClick={() => setMitmStep(2)}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-md shadow-amber-950/50 transition active:scale-95 animate-pulse"
+                  className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs font-mono flex items-center gap-1.5 transition-colors"
                 >
-                  <Unlock className="w-3.5 h-3.5" />
-                  <span>Intercept Keys & Establish Split Secrets</span>
+                  <Unlock className="w-3 h-3" />
+                  <span>Establish Split Secrets</span>
                 </button>
               )}
               {mitmStep === 2 && (
                 <button
                   onClick={() => setMitmStep(3)}
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs font-mono flex items-center gap-1.5 shadow-md shadow-rose-950/50 transition active:scale-95 animate-pulse"
+                  className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-medium text-xs font-mono flex items-center gap-1.5 transition-colors"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Secret Message (Alice → Mallory → Bob)</span>
+                  <Send className="w-3 h-3" />
+                  <span>Send Secret Message</span>
                 </button>
               )}
             </div>
 
             <button
               onClick={resetAll}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition"
+              className="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 text-slate-400 text-xs font-mono flex items-center gap-1 transition-colors"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>Reset Attack</span>
+              <span>Reset</span>
             </button>
           </div>
 
           {/* Three-Node Interception Diagram */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-            {/* Alice (Victim Sender) */}
-            <div className="p-4 rounded-xl bg-slate-950 border border-cyan-500/30 space-y-2.5 font-mono text-xs">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="font-bold text-cyan-400">Alice (Sender)</span>
-                <span className="text-[10px] text-slate-400">Victim</span>
-              </div>
-              <p className="text-slate-400">
-                Alice sends public key <strong className="text-cyan-300">A = {A}</strong> intended for Bob.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Alice */}
+            <div className="p-4 rounded-lg bg-slate-900/60 border border-slate-800 space-y-2 font-mono text-xs">
+              <span className="font-semibold text-slate-200">Alice (Sender)</span>
+              <p className="text-slate-400 text-[11px]">
+                Sends public key A = {A} intended for Bob.
               </p>
               {mitmStep >= 2 && (
-                <div className="p-2.5 rounded bg-amber-950/30 border border-amber-500/30 space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-amber-300">
-                    Alice thinks she connects to Bob:
-                  </div>
-                  <div className="text-[11px] text-slate-300">
-                    Received Fake Key: <strong className="text-rose-400">M = {M}</strong>
-                  </div>
-                  <div className="text-xs font-bold text-amber-300">
-                    Shared Secret A = {S_Alice_Mitm}
-                  </div>
+                <div className="p-2 rounded bg-slate-950 border border-slate-800 space-y-1">
+                  <div className="text-[10px] text-slate-500">Shared Secret (with Mallory):</div>
+                  <div className="text-xs font-semibold text-amber-300">Secret A = {S_Alice_Mitm}</div>
                 </div>
               )}
             </div>
 
-            {/* Mallory (Active MITM Attacker) */}
-            <div className={`p-4 rounded-xl border space-y-2.5 font-mono text-xs transition-all ${
+            {/* Mallory */}
+            <div className={`p-4 rounded-lg border space-y-2 font-mono text-xs transition-colors ${
               mitmStep >= 1
-                ? "bg-rose-950/30 border-rose-500/60 shadow-xl shadow-rose-950/40"
-                : "bg-slate-950/60 border-slate-800 text-slate-500"
+                ? "bg-rose-950/20 border-rose-500/40"
+                : "bg-slate-900/30 border-slate-800 text-slate-500"
             }`}>
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="font-bold text-rose-400 flex items-center gap-1.5">
-                  <Skull className="w-4 h-4" /> Mallory (Attacker)
-                </span>
-                <span className="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded border border-rose-500/30 font-bold">
-                  {mitmStep >= 1 ? "ACTIVE INTRUDER" : "STANDBY"}
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-rose-300 flex items-center gap-1.5">
+                  <Skull className="w-3.5 h-3.5" /> Mallory (Attacker)
                 </span>
               </div>
-
-              {mitmStep === 0 && (
-                <div className="py-4 text-center text-slate-500 italic">
-                  Click &quot;ENABLE MITM ATTACK&quot; above to hijack the public wire.
-                </div>
-              )}
 
               {mitmStep >= 1 && (
-                <div className="space-y-2">
-                  <div className="text-[11px] text-rose-200">
-                    1. Intercepts and DROPS Alice&apos;s A={A} and Bob&apos;s B={B}.
-                  </div>
-                  <div className="text-[11px] text-rose-200">
-                    2. Injects attacker key <strong className="text-white bg-rose-900 px-1.5 py-0.5 rounded">M = {M}</strong> to both victims.
-                  </div>
-                </div>
+                <p className="text-[11px] text-rose-200/80">
+                  Intercepts keys A and B. Injects Mallory key M = {M} to both sides.
+                </p>
               )}
 
               {mitmStep >= 2 && (
-                <div className="space-y-1.5 pt-1">
-                  <div className="p-2 rounded bg-rose-900/30 border border-rose-500/40 text-[11px] text-rose-300">
-                    Secret with Alice: <strong className="text-white text-xs">{S_Alice_Mitm}</strong> (matches Alice)
+                <div className="space-y-1 pt-1 text-[11px]">
+                  <div className="p-1.5 rounded bg-slate-950 text-slate-300">
+                    Alice ↔ Mallory: <strong className="text-rose-300">{S_Alice_Mitm}</strong>
                   </div>
-                  <div className="p-2 rounded bg-rose-900/30 border border-rose-500/40 text-[11px] text-rose-300">
-                    Secret with Bob: <strong className="text-white text-xs">{S_Bob_Mitm}</strong> (matches Bob)
+                  <div className="p-1.5 rounded bg-slate-950 text-slate-300">
+                    Mallory ↔ Bob: <strong className="text-rose-300">{S_Bob_Mitm}</strong>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Bob (Victim Receiver) */}
-            <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-2.5 font-mono text-xs">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="font-bold text-emerald-400">Bob (Receiver)</span>
-                <span className="text-[10px] text-slate-400">Victim</span>
-              </div>
-              <p className="text-slate-400">
-                Bob sends public key <strong className="text-emerald-300">B = {B}</strong> intended for Alice.
+            {/* Bob */}
+            <div className="p-4 rounded-lg bg-slate-900/60 border border-slate-800 space-y-2 font-mono text-xs">
+              <span className="font-semibold text-slate-200">Bob (Receiver)</span>
+              <p className="text-slate-400 text-[11px]">
+                Sends public key B = {B} intended for Alice.
               </p>
               {mitmStep >= 2 && (
-                <div className="p-2.5 rounded bg-amber-950/30 border border-amber-500/30 space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-amber-300">
-                    Bob thinks he connects to Alice:
-                  </div>
-                  <div className="text-[11px] text-slate-300">
-                    Received Fake Key: <strong className="text-rose-400">M = {M}</strong>
-                  </div>
-                  <div className="text-xs font-bold text-amber-300">
-                    Shared Secret B = {S_Bob_Mitm}
-                  </div>
+                <div className="p-2 rounded bg-slate-950 border border-slate-800 space-y-1">
+                  <div className="text-[10px] text-slate-500">Shared Secret (with Mallory):</div>
+                  <div className="text-xs font-semibold text-amber-300">Secret B = {S_Bob_Mitm}</div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Step 3: Interactive Message Interception & Modification */}
+          {/* Step 3: Message Tampering */}
           {mitmStep >= 3 && (
-            <div className="p-5 rounded-xl bg-slate-950 border border-rose-500/50 space-y-4">
-              <div className="text-xs font-mono font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-rose-400" />
-                <span>Live Interception & Tamper Walkthrough</span>
+            <div className="p-4 rounded-lg bg-slate-950 border border-rose-500/40 space-y-3 font-mono text-xs">
+              <div className="font-semibold text-rose-300 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                <span>Message Interception &amp; Modification</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 {/* 1. Alice Sends */}
-                <div className="p-3 rounded-lg bg-slate-900 border border-cyan-500/30 space-y-1.5">
-                  <div className="text-[10px] text-cyan-400 uppercase font-bold">1. Alice Sends Message:</div>
-                  <div className="text-slate-200 font-bold bg-slate-950 p-2 rounded border border-slate-800">
+                <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                  <div className="text-[10px] text-slate-400 uppercase">1. Alice Sends:</div>
+                  <div className="text-slate-200 font-medium">
                     &quot;{aliceMessage}&quot;
                   </div>
-                  <div className="text-[10px] text-slate-400">
-                    Encrypted with Secret A (<span className="text-cyan-300 font-bold">{S_Alice_Mitm}</span>)
+                  <div className="text-[10px] text-slate-500">
+                    Encrypted with Secret A ({S_Alice_Mitm})
                   </div>
                 </div>
 
-                {/* 2. Mallory Decrypts & Modifies */}
-                <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-500/40 space-y-1.5">
-                  <div className="text-[10px] text-rose-300 uppercase font-bold flex items-center justify-between">
-                    <span>2. Mallory Decrypts & Modifies:</span>
-                    <Unlock className="w-3 h-3 text-rose-400" />
-                  </div>
+                {/* 2. Mallory Modifies */}
+                <div className="p-2.5 rounded bg-rose-950/30 border border-rose-500/40 space-y-1">
+                  <div className="text-[10px] text-rose-300 uppercase">2. Mallory Modifies:</div>
                   <input
                     type="text"
                     value={malloryTamperText}
                     onChange={(e) => setMalloryTamperText(e.target.value)}
-                    className="w-full bg-slate-950 p-2 rounded border border-rose-500/50 text-rose-300 font-bold text-xs focus:outline-none"
-                    placeholder="Enter malicious replacement..."
+                    className="w-full bg-slate-950 p-1.5 rounded border border-rose-500/50 text-rose-200 text-xs focus:outline-none"
                   />
-                  <div className="text-[10px] text-rose-200/80">
-                    Decrypted with Key {S_Alice_Mitm}, altered, re-encrypted with Key {S_Bob_Mitm}!
+                  <div className="text-[10px] text-slate-400">
+                    Decrypted, altered, re-encrypted with Secret B ({S_Bob_Mitm})
                   </div>
                 </div>
 
-                {/* 3. Bob Decrypts Tampered Content */}
-                <div className="p-3 rounded-lg bg-slate-900 border border-emerald-500/30 space-y-1.5">
-                  <div className="text-[10px] text-emerald-400 uppercase font-bold">3. Bob Receives & Decrypts:</div>
-                  <div className="text-rose-400 font-bold bg-slate-950 p-2 rounded border border-rose-500/40">
+                {/* 3. Bob Receives */}
+                <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                  <div className="text-[10px] text-slate-400 uppercase">3. Bob Receives:</div>
+                  <div className="text-rose-400 font-medium">
                     &quot;{malloryTamperText}&quot;
                   </div>
-                  <div className="text-[10px] text-slate-400">
-                    Decrypted with Secret B (<span className="text-emerald-300 font-bold">{S_Bob_Mitm}</span>) with zero error!
+                  <div className="text-[10px] text-slate-500">
+                    Decrypted with Secret B ({S_Bob_Mitm})
                   </div>
                 </div>
               </div>
 
-              {/* Verdict Banner */}
-              <div className="p-3.5 rounded-lg bg-rose-950/50 border border-rose-500/60 flex items-start gap-2.5 text-xs font-mono text-rose-300">
-                <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-bold text-sm">
-                    ❌ MITM EXPLOIT CONFIRMED: ZERO AUTHENTICATION
-                  </div>
-                  <p className="text-[11px] text-rose-200/90 mt-0.5 leading-relaxed">
-                    Alice and Bob do not share the same authenticated connection! Because unauthenticated Diffie-Hellman cannot verify <em>who</em> sent the public keys, Mallory read and completely falsified the message in transit.
-                  </p>
-                </div>
+              {/* Verdict */}
+              <div className="p-3 rounded bg-rose-950/20 border border-rose-500/30 text-rose-300 text-xs">
+                ❌ Alice and Bob do not actually share the same authenticated connection.
               </div>
             </div>
           )}
         </div>
       )}
-
-      {/* Why It Matters & SecureDrop Defense Architecture */}
-      <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1">
-          Why It Matters & SecureDrop&apos;s Solution (CIPAT Viva Defense)
-        </h4>
-        <p className="text-xs text-slate-300 leading-relaxed">
-          Diffie-Hellman guarantees secrecy against passive eavesdroppers, but is defenseless against an active Man-in-the-Middle without <strong>authentication</strong>. 
-          <br className="my-1" />
-          <strong>How SecureDrop Completely Prevents This:</strong> SecureDrop rejects unauthenticated in-band key exchanges. Instead, the 256-bit file key is generated locally in the sender&apos;s browser and <strong>wrapped using PBKDF2 (100,000 iterations) with an out-of-band 6-character transfer code</strong>. Even if an active attacker captures network traffic or presigned S3 URLs, they cannot decrypt the file key without knowing the secret transfer code shared out-of-band.
-        </p>
-      </div>
     </div>
   );
 }

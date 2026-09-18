@@ -3,9 +3,8 @@ import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SecureDrop | End-to-End Encrypted File Sharing",
-  description:
-    "Secure file sharing system using client-side AES-256-GCM encryption and direct AWS S3 multipart upload. Zero-knowledge architecture.",
+  title: "SecureDrop | Secure File Sharing",
+  description: "Secure, client-side encrypted file sharing.",
 };
 
 export default function RootLayout({
@@ -15,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="antialiased min-h-screen bg-[#080c14] text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
+      <body className="min-h-screen bg-[#090d14] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200">
         <Navbar />
         {children}
       </body>

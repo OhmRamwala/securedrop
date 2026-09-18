@@ -2,52 +2,35 @@
 
 import React from "react";
 import Link from "next/link";
-import { Lock, Radio, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 
 export function Navbar() {
   return (
-    <header className="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:border-cyan-500/60 transition">
-            <Lock className="w-5 h-5" />
+    <header className="border-b border-slate-800/80 bg-[#090d14]/90 backdrop-blur-sm sticky top-0 z-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        {/* Brand / Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 text-slate-100 hover:text-white transition group"
+        >
+          <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700/80 flex items-center justify-center text-slate-300 group-hover:text-white group-hover:border-slate-600 transition">
+            <Shield className="w-4 h-4" />
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-lg tracking-wider text-slate-100">
-                SECURE<span className="text-cyan-400">DROP</span>
-              </span>
-              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                PROTOTYPE
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 hidden sm:block">
-              Zero-Knowledge End-to-End Encrypted File Sharing
-            </p>
-          </div>
+          <span className="font-semibold text-base tracking-tight text-white">
+            SecureDrop
+          </span>
         </Link>
 
-        <div className="flex items-center space-x-3">
+        {/* Navigation Action */}
+        <div className="flex items-center gap-3">
           <Link
             href="/demo"
-            className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-500/30 text-xs font-mono text-cyan-300 transition"
+            className="text-xs font-medium text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 bg-slate-900/60 hover:bg-slate-800/80 transition"
           >
-            <Shield className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Security Lab</span>
+            Security Demo
           </Link>
-
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
-            <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            <span className="font-mono text-[11px] text-slate-300 hidden md:inline">
-              AES-256-GCM Direct S3
-            </span>
-            <span className="font-mono text-[11px] text-emerald-400">
-              E2EE ACTIVE
-            </span>
-          </div>
         </div>
       </div>
     </header>
   );
 }
-

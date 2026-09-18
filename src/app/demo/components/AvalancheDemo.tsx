@@ -1,15 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles, GitCompare, ArrowRight, ShieldCheck, Binary } from "lucide-react";
-
-function bytesToBinaryString(bytes: Uint8Array): string {
-  let str = "";
-  for (let i = 0; i < bytes.length; i++) {
-    str += bytes[i].toString(2).padStart(8, "0");
-  }
-  return str;
-}
 
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
@@ -19,7 +10,7 @@ function bytesToHex(bytes: Uint8Array): string {
 
 export function AvalancheDemo() {
   const [plaintextA, setPlaintextA] = useState("The quick brown fox jumps over the lazy dog");
-  const [plaintextB, setPlaintextB] = useState("The quick brown fox jumps over the lazy fog"); // 1 bit flip: 'd' (01100100) vs 'f' (01100110)
+  const [plaintextB, setPlaintextB] = useState("The quick brown fox jumps over the lazy fog");
 
   const [ciphertextA, setCiphertextA] = useState<Uint8Array | null>(null);
   const [ciphertextB, setCiphertextB] = useState<Uint8Array | null>(null);
@@ -35,7 +26,6 @@ export function AvalancheDemo() {
     const bytesA = encoder.encode(plaintextA);
     const bytesB = encoder.encode(plaintextB);
 
-    // Calculate input bit difference
     const maxLen = Math.max(bytesA.length, bytesB.length);
     let inputBitsFlipped = 0;
     for (let i = 0; i < maxLen; i++) {
@@ -48,7 +38,6 @@ export function AvalancheDemo() {
       }
     }
 
-    // Use a fixed key and IV for deterministic side-by-side comparison
     const rawKey = new Uint8Array(32);
     rawKey.set([
       0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
@@ -83,7 +72,6 @@ export function AvalancheDemo() {
     setCiphertextA(outA);
     setCiphertextB(outB);
 
-    // Compute bit differences in ciphertext
     const compareLen = Math.min(outA.length, outB.length);
     let outputBitsFlipped = 0;
     const totalBits = compareLen * 8;
@@ -116,115 +104,94 @@ export function AvalancheDemo() {
 
   return (
     <div className="space-y-6">
-      {/* What is Happening */}
-      <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-cyan-400 mb-1 flex items-center gap-2">
-          <Sparkles className="w-4 h-4" /> What is Happening (Strict Avalanche Criterion)
-        </h3>
-        <p className="text-sm text-slate-300 leading-relaxed">
-          The <strong>Avalanche Effect</strong> is a vital property of cryptographic algorithms where a tiny alteration in the plaintext 
-          (even a <strong>single bit flip</strong>) causes a massive, pseudo-random cascading change throughout the resulting ciphertext. 
-          In a cryptographically sound block cipher like AES, each output bit should flip with <strong>~50% probability</strong>.
-        </p>
-      </div>
-
       {/* Preset Quick Actions */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-slate-400 font-mono">Quick Presets:</span>
+        <span className="text-xs text-slate-400 font-medium">Presets:</span>
         <button
           onClick={() => applyPreset("The quick brown fox jumps over the lazy dog", "The quick brown fox jumps over the lazy fog")}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-mono border border-slate-700"
+          className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors"
         >
-          1-Bit ASCII Flip ('dog' ➔ 'fog')
+          1-Bit Flip (&apos;d&apos; → &apos;f&apos;)
         </button>
         <button
           onClick={() => applyPreset("SecureDrop 2GB Transfer Protocol", "SecureDrop 2GB Transfer Protocol.")}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-mono border border-slate-700"
+          className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors"
         >
-          Add Single Period ('.')
+          Add Period (&apos;.&apos;)
         </button>
         <button
           onClick={() => applyPreset("PASSWORD12345678", "password12345678")}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-mono border border-slate-700"
+          className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono border border-slate-800 transition-colors"
         >
-          Uppercase ➔ Lowercase
+          Case Change
         </button>
       </div>
 
       {/* Inputs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <label className="block text-xs font-mono text-cyan-400 font-semibold">
-            Plaintext A:
+          <label className="block text-xs font-medium text-slate-300">
+            Plaintext A
           </label>
           <input
             type="text"
             value={plaintextA}
             onChange={(e) => setPlaintextA(e.target.value)}
-            className="w-full px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono focus:outline-none focus:border-cyan-500"
+            className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono focus:outline-none focus:border-blue-500"
           />
         </div>
         <div className="space-y-1.5">
-          <label className="block text-xs font-mono text-emerald-400 font-semibold">
-            Plaintext B (Slightly modified):
+          <label className="block text-xs font-medium text-slate-300">
+            Plaintext B (Modified)
           </label>
           <input
             type="text"
             value={plaintextB}
             onChange={(e) => setPlaintextB(e.target.value)}
-            className="w-full px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono focus:outline-none focus:border-emerald-500"
+            className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono focus:outline-none focus:border-blue-500"
           />
         </div>
       </div>
 
       {/* Avalanche Metric Scorecard */}
       {bitStats && (
-        <div className="p-4 rounded-xl bg-slate-950/80 border border-cyan-500/30">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mb-3">
-            <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
-              <div className="text-[10px] text-slate-400 uppercase font-mono">Input Bit Difference</div>
-              <div className="text-base font-bold text-amber-400 font-mono mt-0.5">
+        <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="p-2.5 rounded bg-slate-900/90 border border-slate-800/80">
+              <div className="text-[10px] text-slate-500 uppercase font-mono">Input Bit Difference</div>
+              <div className="text-sm font-semibold text-slate-200 font-mono mt-0.5">
                 {bitStats.inputBitDiff} bit{bitStats.inputBitDiff === 1 ? "" : "s"}
               </div>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
-              <div className="text-[10px] text-slate-400 uppercase font-mono">Ciphertext Bits Flipped</div>
-              <div className="text-base font-bold text-cyan-400 font-mono mt-0.5">
+            <div className="p-2.5 rounded bg-slate-900/90 border border-slate-800/80">
+              <div className="text-[10px] text-slate-500 uppercase font-mono">Output Bits Flipped</div>
+              <div className="text-sm font-semibold text-slate-200 font-mono mt-0.5">
                 {bitStats.flippedBits} / {bitStats.totalBits}
               </div>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
-              <div className="text-[10px] text-slate-400 uppercase font-mono">Diffusion Percentage</div>
-              <div className={`text-base font-bold font-mono mt-0.5 ${
-                Math.abs(bitStats.percentage - 50) < 10 ? "text-emerald-400" : "text-cyan-400"
-              }`}>
+            <div className="p-2.5 rounded bg-slate-900/90 border border-slate-800/80">
+              <div className="text-[10px] text-slate-500 uppercase font-mono">Diffusion Rate</div>
+              <div className="text-sm font-semibold text-emerald-400 font-mono mt-0.5">
                 {bitStats.percentage}%
               </div>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
-              <div className="text-[10px] text-slate-400 uppercase font-mono">Theoretical SAC Ideal</div>
-              <div className="text-base font-bold text-emerald-400 font-mono mt-0.5">
-                ~50.0%
+            <div className="p-2.5 rounded bg-slate-900/90 border border-slate-800/80">
+              <div className="text-[10px] text-slate-500 uppercase font-mono">Optimal Diffusion</div>
+              <div className="text-sm font-semibold text-slate-400 font-mono mt-0.5">
+                ~50%
               </div>
             </div>
           </div>
 
-          {/* Progress bar visual */}
           <div className="space-y-1">
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-              <span>0% (No diffusion)</span>
-              <span className="text-emerald-400 font-bold">50% Optimal Diffusion (AES-256)</span>
-              <span>100% (Inversion)</span>
-            </div>
-            <div className="h-3 w-full bg-slate-900 rounded-full overflow-hidden relative border border-slate-800">
+            <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-300"
+                className="bg-blue-500 h-full rounded-full transition-all duration-300"
                 style={{ width: `${Math.min(100, bitStats.percentage)}%` }}
               />
-              <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-emerald-300 shadow-sm" />
             </div>
           </div>
         </div>
@@ -232,38 +199,25 @@ export function AvalancheDemo() {
 
       {/* Visual Hex Comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div className="text-xs font-mono text-cyan-400 font-semibold mb-1 flex items-center justify-between">
+        <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="text-xs font-mono text-slate-300 font-medium mb-1.5 flex justify-between">
             <span>Ciphertext A (Hex)</span>
-            <span className="text-[10px] text-slate-400">{ciphertextA?.length} bytes</span>
+            <span className="text-[10px] text-slate-500">{ciphertextA?.length} bytes</span>
           </div>
-          <div className="font-mono text-[11px] text-slate-300 bg-slate-900/70 p-2.5 rounded border border-slate-800/80 break-all max-h-24 overflow-y-auto leading-relaxed">
+          <div className="font-mono text-[11px] text-slate-300 bg-slate-900/60 p-2.5 rounded border border-slate-800/60 break-all max-h-24 overflow-y-auto">
             {ciphertextA ? bytesToHex(ciphertextA) : "..."}
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-          <div className="text-xs font-mono text-emerald-400 font-semibold mb-1 flex items-center justify-between">
+        <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="text-xs font-mono text-slate-300 font-medium mb-1.5 flex justify-between">
             <span>Ciphertext B (Hex)</span>
-            <span className="text-[10px] text-slate-400">{ciphertextB?.length} bytes</span>
+            <span className="text-[10px] text-slate-500">{ciphertextB?.length} bytes</span>
           </div>
-          <div className="font-mono text-[11px] text-slate-300 bg-slate-900/70 p-2.5 rounded border border-slate-800/80 break-all max-h-24 overflow-y-auto leading-relaxed">
+          <div className="font-mono text-[11px] text-slate-300 bg-slate-900/60 p-2.5 rounded border border-slate-800/60 break-all max-h-24 overflow-y-auto">
             {ciphertextB ? bytesToHex(ciphertextB) : "..."}
           </div>
         </div>
-      </div>
-
-      {/* Why It Matters */}
-      <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1">
-          Why It Matters (Viva Talking Points)
-        </h4>
-        <p className="text-xs text-slate-300 leading-relaxed">
-          The Avalanche Effect embodies Claude Shannon&apos;s cryptographic principle of <strong>Diffusion</strong>. 
-          If an adversary observes two encrypted transfers or files with similar plaintexts, the ciphertexts are statistically uncorrelated. 
-          Without the Avalanche Effect, an attacker could employ <em>differential cryptanalysis</em> to deduce plaintext fragments by observing patterns of changed bits. 
-          In SecureDrop, AES-256-GCM ensures that even a 1-byte metadata update completely scrambles the output blocks across the entire 2 GB stream.
-        </p>
       </div>
     </div>
   );
