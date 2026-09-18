@@ -3,42 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0e17;
-  --foreground: #f3f5f9;
+  --background: #faf9f6;
+  --foreground: #18181b;
 }
 
 body {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Oxygen,
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle background texture for real-world depth */
-.subtle-pattern {
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.03) 0px, transparent 50%);
-  background-size: 28px 28px, 100% 100%, 100% 100%;
+/* Tasteful, warm ambient canvas background with fine dot structure */
+.bg-ambient-canvas {
+  background-color: #faf9f6;
+  background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-/* Subtle border and depth tokens */
-.product-card {
-  background-color: #111624;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+/* Crisp card shadows */
+.card-hero-shadow {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
-.product-card-elevated {
-  background-color: #151b2c;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Restrained scrollbar */
+/* Subtle, refined scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -47,9 +38,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #252e42;
+  background: #d1d5db;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #36425d;
+  background: #9ca3af;
 }

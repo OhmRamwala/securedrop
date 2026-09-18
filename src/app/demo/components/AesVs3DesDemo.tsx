@@ -224,9 +224,9 @@ export function AesVs3DesDemo() {
               <td className="px-3.5 py-2 text-rose-400">No</td>
             </tr>
             <tr>
-              <td className="px-3.5 py-2 text-slate-400">NIST Status</td>
+              <td className="px-3.5 py-2 text-slate-400">Industry Status</td>
               <td className="px-3.5 py-2 text-emerald-400">Active Standard</td>
-              <td className="px-3.5 py-2 text-amber-400">Disallowed (SP 800-131A)</td>
+              <td className="px-3.5 py-2 text-amber-400">Deprecated</td>
             </tr>
           </tbody>
         </table>

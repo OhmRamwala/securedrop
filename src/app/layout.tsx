@@ -3,8 +3,8 @@ import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SecureDrop | Secure File Sharing",
-  description: "Secure, client-side encrypted file sharing.",
+  title: "SecureDrop | Simple, Secure File Transfer",
+  description: "Send and receive files up to 2 GB with client-side browser encryption.",
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#0a0e17] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200">
+    <html lang="en">
+      <body className="min-h-screen bg-[#faf9f6] text-stone-900 selection:bg-blue-600 selection:text-white antialiased">
         <Navbar />
         {children}
       </body>
