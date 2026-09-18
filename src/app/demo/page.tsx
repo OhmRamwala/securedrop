@@ -6,21 +6,19 @@ import { AesVs3DesDemo } from "./components/AesVs3DesDemo";
 import { AvalancheDemo } from "./components/AvalancheDemo";
 import { Sha256Demo } from "./components/Sha256Demo";
 import { DiffieHellmanDemo } from "./components/DiffieHellmanDemo";
-import { WiresharkDemo } from "./components/WiresharkDemo";
 import {
   ShieldAlert,
   Key,
   Sparkles,
   Hash,
   ArrowLeftRight,
-  Activity,
   ArrowLeft,
   Terminal,
   Cpu,
   Lock,
 } from "lucide-react";
 
-type DemoTab = "aes-vs-3des" | "avalanche" | "sha256" | "diffie-hellman" | "wireshark";
+type DemoTab = "aes-vs-3des" | "avalanche" | "sha256" | "diffie-hellman";
 
 export default function SecurityDemoPage() {
   const [activeTab, setActiveTab] = useState<DemoTab>("aes-vs-3des");
@@ -49,12 +47,6 @@ export default function SecurityDemoPage() {
       label: "Diffie-Hellman & MITM",
       icon: <ArrowLeftRight className="w-4 h-4" />,
       badge: "CIPAT #4",
-    },
-    {
-      id: "wireshark",
-      label: "Live Wireshark Demo",
-      icon: <Activity className="w-4 h-4" />,
-      badge: "CIPAT #5",
     },
   ];
 
@@ -136,7 +128,6 @@ export default function SecurityDemoPage() {
           {activeTab === "avalanche" && <AvalancheDemo />}
           {activeTab === "sha256" && <Sha256Demo />}
           {activeTab === "diffie-hellman" && <DiffieHellmanDemo />}
-          {activeTab === "wireshark" && <WiresharkDemo />}
         </div>
       </div>
 
