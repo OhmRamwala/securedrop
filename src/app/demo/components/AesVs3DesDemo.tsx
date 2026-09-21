@@ -84,7 +84,7 @@ export function AesVs3DesDemo() {
     <div className="space-y-6">
       {/* Input control */}
       <div className="space-y-2">
-        <label className="block text-xs font-medium text-slate-300">
+        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
           Plaintext Input
         </label>
         <div className="flex gap-2">
@@ -92,12 +92,12 @@ export function AesVs3DesDemo() {
             type="text"
             value={plaintext}
             onChange={(e) => setPlaintext(e.target.value)}
-            className="w-full px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono focus:outline-none focus:border-blue-500"
+            className="w-full px-3.5 py-2 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 text-xs font-mono focus:outline-none focus:border-[#2563EB] shadow-xs"
             placeholder="Type sample message..."
           />
           <button
             onClick={runComparison}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs whitespace-nowrap transition-colors"
+            className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-blue-700 text-white font-medium text-xs whitespace-nowrap transition-colors shadow-xs"
           >
             Re-Encrypt Both
           </button>
@@ -107,126 +107,126 @@ export function AesVs3DesDemo() {
       {/* Side-by-side Comparative Results */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* AES-256-GCM Card */}
-        <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 pb-2.5">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <h4 className="font-semibold text-slate-100 text-sm">AES-256-GCM</h4>
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">AES-256-GCM</h4>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
               Modern Standard
             </span>
           </div>
 
           <div className="space-y-2.5 text-xs font-mono">
-            <div className="flex justify-between items-center text-slate-400">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span>Key Size:</span>
-              <span className="text-slate-200 font-semibold">256 bits</span>
+              <span className="text-slate-900 dark:text-slate-200 font-semibold">256 bits</span>
             </div>
 
-            <div className="flex justify-between items-center text-slate-400">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span>Block Size:</span>
-              <span className="text-slate-200 font-semibold">128 bits</span>
+              <span className="text-slate-900 dark:text-slate-200 font-semibold">128 bits</span>
             </div>
 
-            <div className="flex justify-between items-center text-slate-400">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span>Integrity Tag:</span>
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" />
                 <span>128-bit GHASH</span>
               </span>
             </div>
 
             <div>
-              <div className="text-[10px] text-slate-500 uppercase mb-1">Ciphertext (Hex)</div>
-              <div className="text-[11px] text-slate-300 break-all bg-slate-900/80 p-2 rounded border border-slate-800/80 max-h-16 overflow-y-auto">
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase mb-1">Ciphertext (Hex)</div>
+              <div className="text-[11px] text-slate-800 dark:text-slate-300 break-all bg-white dark:bg-slate-900/80 p-2 rounded-lg border border-slate-200 dark:border-slate-800/80 max-h-16 overflow-y-auto">
                 {aesResult ? aesResult.ciphertextHex : "..."}
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-slate-800/60">
+            <div className="flex justify-between items-center text-[11px] text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800/60">
               <span>Hardware Acceleration: Native</span>
-              <span className="text-slate-300">{aesResult?.timeMs} ms</span>
+              <span className="text-slate-900 dark:text-slate-300 font-semibold">{aesResult?.timeMs} ms</span>
             </div>
           </div>
         </div>
 
         {/* 3DES Card */}
-        <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 pb-2.5">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
-              <h4 className="font-semibold text-slate-100 text-sm">Triple-DES (3DES)</h4>
+              <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+              <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Triple-DES (3DES)</h4>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
               Deprecated
             </span>
           </div>
 
           <div className="space-y-2.5 text-xs font-mono">
-            <div className="flex justify-between items-center text-slate-400">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span>Key Size:</span>
-              <span className="text-slate-200 font-semibold">112 bits (effective)</span>
+              <span className="text-slate-900 dark:text-slate-200 font-semibold">112 bits (effective)</span>
             </div>
 
-            <div className="flex justify-between items-center text-slate-400">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span>Block Size:</span>
-              <span className="text-amber-400 font-semibold">64 bits</span>
+              <span className="text-amber-600 dark:text-amber-400 font-semibold">64 bits</span>
             </div>
 
-            <div className="flex justify-between items-center text-slate-400">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span>Integrity Tag:</span>
-              <span className="text-rose-400 font-semibold flex items-center gap-1">
+              <span className="text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
                 <XCircle className="w-3 h-3" />
                 <span>None (Unauthenticated)</span>
               </span>
             </div>
 
             <div>
-              <div className="text-[10px] text-slate-500 uppercase mb-1">Ciphertext (Hex)</div>
-              <div className="text-[11px] text-slate-300 break-all bg-slate-900/80 p-2 rounded border border-slate-800/80 max-h-16 overflow-y-auto">
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase mb-1">Ciphertext (Hex)</div>
+              <div className="text-[11px] text-slate-800 dark:text-slate-300 break-all bg-white dark:bg-slate-900/80 p-2 rounded-lg border border-slate-200 dark:border-slate-800/80 max-h-16 overflow-y-auto">
                 {desResult ? desResult.ciphertextHex : "..."}
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-slate-800/60">
+            <div className="flex justify-between items-center text-[11px] text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800/60">
               <span>Hardware Acceleration: None</span>
-              <span className="text-slate-300">{desResult?.timeMs} ms</span>
+              <span className="text-slate-900 dark:text-slate-300 font-semibold">{desResult?.timeMs} ms</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Comparison Specifications Table */}
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
-        <table className="w-full text-xs text-left text-slate-300 font-mono">
-          <thead className="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <table className="w-full text-xs text-left text-slate-700 dark:text-slate-300 font-mono">
+          <thead className="bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 uppercase border-b border-slate-200 dark:border-slate-800">
             <tr>
               <th className="px-3.5 py-2.5 font-medium">Metric</th>
-              <th className="px-3.5 py-2.5 font-medium text-slate-200">AES-256-GCM</th>
-              <th className="px-3.5 py-2.5 font-medium text-slate-400">Triple-DES (3DES)</th>
+              <th className="px-3.5 py-2.5 font-medium text-slate-900 dark:text-slate-200">AES-256-GCM</th>
+              <th className="px-3.5 py-2.5 font-medium text-slate-600 dark:text-slate-400">Triple-DES (3DES)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-950/40">
             <tr>
-              <td className="px-3.5 py-2 text-slate-400">Security Strength</td>
-              <td className="px-3.5 py-2 text-emerald-400">256 bits</td>
-              <td className="px-3.5 py-2 text-slate-400">112 bits</td>
+              <td className="px-3.5 py-2 text-slate-600 dark:text-slate-400">Security Strength</td>
+              <td className="px-3.5 py-2 text-emerald-600 dark:text-emerald-400 font-semibold">256 bits</td>
+              <td className="px-3.5 py-2 text-slate-600 dark:text-slate-400">112 bits</td>
             </tr>
             <tr>
-              <td className="px-3.5 py-2 text-slate-400">Block Size</td>
-              <td className="px-3.5 py-2 text-slate-200">128 bits</td>
-              <td className="px-3.5 py-2 text-slate-400">64 bits</td>
+              <td className="px-3.5 py-2 text-slate-600 dark:text-slate-400">Block Size</td>
+              <td className="px-3.5 py-2 text-slate-900 dark:text-slate-200">128 bits</td>
+              <td className="px-3.5 py-2 text-slate-600 dark:text-slate-400">64 bits</td>
             </tr>
             <tr>
-              <td className="px-3.5 py-2 text-slate-400">Authentication (AEAD)</td>
-              <td className="px-3.5 py-2 text-emerald-400">Yes (GHASH Tag)</td>
-              <td className="px-3.5 py-2 text-rose-400">No</td>
+              <td className="px-3.5 py-2 text-slate-600 dark:text-slate-400">Authentication (AEAD)</td>
+              <td className="px-3.5 py-2 text-emerald-600 dark:text-emerald-400 font-semibold">Yes (GHASH Tag)</td>
+              <td className="px-3.5 py-2 text-rose-600 dark:text-rose-400 font-semibold">No</td>
             </tr>
             <tr>
-              <td className="px-3.5 py-2 text-slate-400">Industry Status</td>
-              <td className="px-3.5 py-2 text-emerald-400">Active Standard</td>
-              <td className="px-3.5 py-2 text-amber-400">Deprecated</td>
+              <td className="px-3.5 py-2 text-slate-600 dark:text-slate-400">Industry Status</td>
+              <td className="px-3.5 py-2 text-emerald-600 dark:text-emerald-400 font-semibold">Active Standard</td>
+              <td className="px-3.5 py-2 text-amber-600 dark:text-amber-400 font-semibold">Deprecated</td>
             </tr>
           </tbody>
         </table>

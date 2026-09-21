@@ -33,38 +33,38 @@ export default function SecurityDemoPage() {
   ];
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-ambient-canvas py-8 sm:py-12 px-4 sm:px-6 max-w-5xl mx-auto flex flex-col justify-between">
+    <main className="min-h-[calc(100vh-4rem)] bg-canvas py-8 sm:py-12 px-4 sm:px-6 max-w-5xl mx-auto flex flex-col justify-between transition-colors">
       <div>
         {/* Navigation & Header */}
         <div className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 transition mb-3"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white transition-colors mb-3"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to SecureDrop</span>
           </Link>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
             Security Demo
           </h1>
-          <p className="text-xs sm:text-sm text-stone-600 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Interactive demonstrations of core cryptographic primitives and attack simulations.
           </p>
         </div>
 
         {/* Full-width Tab Bar (Spans 100% of container width) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full p-1.5 rounded-2xl bg-stone-200/70 border border-stone-300/60 shadow-inner mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full p-1.5 rounded-xl bg-slate-200/70 dark:bg-slate-800/70 border border-[#E2E8F0] dark:border-slate-700/80 mb-6 shadow-inner">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-center flex items-center justify-center ${
+                className={`w-full py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all text-center flex items-center justify-center ${
                   isActive
-                    ? "bg-white text-stone-900 shadow-sm border border-stone-200/60 font-bold"
-                    : "text-stone-600 hover:text-stone-900 hover:bg-white/50"
+                    ? "bg-white dark:bg-slate-900 text-[#0F172A] dark:text-[#F8FAFC] shadow-sm font-bold border border-slate-200/60 dark:border-slate-700/60"
+                    : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -74,7 +74,7 @@ export default function SecurityDemoPage() {
         </div>
 
         {/* Tab Content Display */}
-        <div className="rounded-3xl bg-[#0f141f] border border-stone-300/80 p-5 sm:p-7 shadow-lg">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-800 p-5 sm:p-7 shadow-sm transition-colors">
           {activeTab === "aes-vs-3des" && <AesVs3DesDemo />}
           {activeTab === "avalanche" && <AvalancheDemo />}
           {activeTab === "sha256" && <Sha256Demo />}
@@ -83,9 +83,9 @@ export default function SecurityDemoPage() {
       </div>
 
       {/* Minimal Footer */}
-      <footer className="mt-16 pt-6 border-t border-stone-200/80 text-center text-xs text-stone-500 font-normal">
-        <p className="font-bold text-stone-700">SecureDrop</p>
-        <p className="mt-0.5 text-stone-400">© 2026 SecureDrop</p>
+      <footer className="mt-16 pt-6 border-t border-[#E2E8F0] dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 font-normal transition-colors">
+        <p className="font-bold text-[#0F172A] dark:text-[#F8FAFC]">SecureDrop</p>
+        <p className="mt-0.5">© 2026 SecureDrop</p>
       </footer>
     </main>
   );

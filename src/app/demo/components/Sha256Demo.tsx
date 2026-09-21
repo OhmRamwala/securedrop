@@ -86,12 +86,12 @@ export function Sha256Demo() {
   return (
     <div className="space-y-6">
       {/* Header & Presets */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-200">
             Cryptographic Hash Function &amp; Integrity Verification
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             Demonstrating collision-resistance, pre-image resistance, and strict avalanche integrity.
           </p>
         </div>
@@ -102,7 +102,7 @@ export function Sha256Demo() {
             <button
               key={p.name}
               onClick={() => loadPreset(p.text)}
-              className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/80 transition-colors"
+              className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 transition-colors shadow-xs"
             >
               {p.name}
             </button>
@@ -115,30 +115,30 @@ export function Sha256Demo() {
         <div className="flex items-center gap-2">
           <button
             onClick={revertToOriginal}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono border transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono border transition-all flex items-center gap-1.5 shadow-xs ${
               isMatching
-                ? "bg-emerald-950/30 text-emerald-400 border-emerald-500/30"
-                : "bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700"
+                ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30"
+                : "bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
             }`}
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>Restore Untampered State</span>
           </button>
 
           <button
             onClick={tamperOneByte}
-            className="px-3 py-1.5 rounded-lg bg-rose-950/20 hover:bg-rose-950/40 text-rose-300 text-xs font-mono border border-rose-500/30 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-mono border border-rose-200 dark:border-rose-500/30 transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
+            <AlertOctagon className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
             <span>Simulate 1-Byte Tamper</span>
           </button>
         </div>
 
         {!isMatching && (
-          <div className="flex items-center gap-2 text-xs font-mono px-3 py-1 rounded-lg bg-slate-900 border border-slate-800">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-slate-400">Avalanche Drift:</span>
-            <span className="text-amber-300 font-semibold">{bitDiff.diffBits} / 256 bits ({bitDiff.percentage}%)</span>
+          <div className="flex items-center gap-2 text-xs font-mono px-3 py-1 rounded-lg bg-amber-50 dark:bg-slate-900 border border-amber-200 dark:border-slate-800">
+            <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+            <span className="text-slate-600 dark:text-slate-400">Avalanche Drift:</span>
+            <span className="text-amber-700 dark:text-amber-300 font-semibold">{bitDiff.diffBits} / 256 bits ({bitDiff.percentage}%)</span>
           </div>
         )}
       </div>
@@ -148,7 +148,7 @@ export function Sha256Demo() {
         {/* Original Data */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-slate-300">
+            <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
               Sender Original Payload
             </label>
             <span className="text-[10px] font-mono text-slate-500">{originalData.length} bytes</span>
@@ -157,11 +157,11 @@ export function Sha256Demo() {
             value={originalData}
             onChange={(e) => setOriginalData(e.target.value)}
             rows={3}
-            className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 text-xs font-mono focus:outline-none focus:border-[#2563EB] transition-colors shadow-xs"
           />
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
-            <div className="text-[10px] uppercase font-mono text-slate-500 tracking-wider">Original SHA-256 Digest (256 bits)</div>
-            <div className="font-mono text-xs text-slate-200 break-all mt-1 select-all">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+            <div className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 tracking-wider">Original SHA-256 Digest (256 bits)</div>
+            <div className="font-mono text-xs text-slate-900 dark:text-slate-200 break-all mt-1 select-all">
               {originalHash || "..."}
             </div>
           </div>
@@ -170,7 +170,7 @@ export function Sha256Demo() {
         {/* Received Data */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-slate-300">
+            <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
               Recipient Received Payload
             </label>
             <span className="text-[10px] font-mono text-slate-500">{receivedData.length} bytes</span>
@@ -179,16 +179,16 @@ export function Sha256Demo() {
             value={receivedData}
             onChange={(e) => setReceivedData(e.target.value)}
             rows={3}
-            className={`w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border text-xs font-mono focus:outline-none transition-colors ${
+            className={`w-full px-3.5 py-2.5 rounded-lg bg-white dark:bg-slate-950 border text-xs font-mono focus:outline-none transition-colors shadow-xs ${
               isMatching
-                ? "border-slate-700 text-slate-200 focus:border-blue-500"
-                : "border-rose-500/50 text-rose-200 focus:border-rose-400"
+                ? "border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-[#2563EB]"
+                : "border-rose-300 dark:border-rose-500/50 text-rose-800 dark:text-rose-200 focus:border-rose-500"
             }`}
           />
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
-            <div className="text-[10px] uppercase font-mono text-slate-500 tracking-wider">Computed SHA-256 Digest (Recipient)</div>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+            <div className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 tracking-wider">Computed SHA-256 Digest (Recipient)</div>
             <div className={`font-mono text-xs break-all mt-1 select-all ${
-              isMatching ? "text-slate-200" : "text-rose-400 font-semibold"
+              isMatching ? "text-slate-900 dark:text-slate-200" : "text-rose-600 dark:text-rose-400 font-semibold"
             }`}>
               {receivedHash || "..."}
             </div>
@@ -199,29 +199,29 @@ export function Sha256Demo() {
       {/* Integrity Verdict Banner */}
       <div className={`p-4 rounded-xl border flex items-center gap-3 transition-colors ${
         isMatching
-          ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
-          : "bg-rose-950/20 border-rose-500/40 text-rose-300"
+          ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
+          : "bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-500/40 text-rose-800 dark:text-rose-300"
       }`}>
         {isMatching ? (
           <>
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <div>
-              <div className="font-semibold text-xs font-mono text-emerald-300">
+              <div className="font-semibold text-xs font-mono text-emerald-800 dark:text-emerald-300">
                 ✓ Cryptographic Integrity Verified: Hashes Match Perfectly
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
                 The computed digest strictly matches the original transmission manifest. Zero bit corruption or unauthorized modification detected.
               </p>
             </div>
           </>
         ) : (
           <>
-            <AlertOctagon className="w-5 h-5 text-rose-400 shrink-0" />
+            <AlertOctagon className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
             <div>
-              <div className="font-semibold text-xs font-mono text-rose-300">
+              <div className="font-semibold text-xs font-mono text-rose-800 dark:text-rose-300">
                 ❌ Tamper / Corruption Detected: Digest Mismatch
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
                 Due to SHA-256&apos;s strict avalanche effect, modifying even a single bit alters approximately 50% ({bitDiff.diffBits} of 256 bits) of the output digest. The client rejects this transfer.
               </p>
             </div>

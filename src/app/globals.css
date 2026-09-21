@@ -3,8 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #faf9f6;
-  --foreground: #18181b;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --border: #E2E8F0;
+  --accent: #2563EB;
+}
+
+.dark {
+  --background: #090D16;
+  --foreground: #F8FAFC;
+  --card: #0F172A;
+  --border: #1E293B;
+  --accent: #2563EB;
 }
 
 body {
@@ -15,21 +26,21 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Tasteful, warm ambient canvas background with fine dot structure */
-.bg-ambient-canvas {
-  background-color: #faf9f6;
-  background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
+/* Subtle clean background pattern */
+.bg-canvas {
+  background-color: var(--background);
+  background-image: radial-gradient(#CBD5E1 0.75px, transparent 0.75px);
   background-size: 24px 24px;
 }
 
-/* Crisp card shadows */
-.card-hero-shadow {
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.04);
+.dark .bg-canvas {
+  background-image: radial-gradient(#1E293B 0.75px, transparent 0.75px);
 }
 
-/* Subtle, refined scrollbar */
+/* Restrained scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -38,9 +49,12 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #94A3B8;
 }

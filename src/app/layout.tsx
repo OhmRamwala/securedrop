@@ -3,8 +3,8 @@ import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SecureDrop | Simple, Secure File Transfer",
-  description: "Send and receive files up to 2 GB with client-side browser encryption.",
+  title: "SecureDrop | Simple, Private File Sharing",
+  description: "Fast, private file sharing for files up to 2 GB.",
 };
 
 export default function RootLayout({
@@ -13,8 +13,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-[#faf9f6] text-stone-900 selection:bg-blue-600 selection:text-white antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const stored = localStorage.getItem('theme');
+                if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F8FAFC] selection:bg-[#2563EB] selection:text-white antialiased">
         <Navbar />
         {children}
       </body>
